@@ -1,4 +1,4 @@
 # Crosswords
 
-- Made with Vue.js
+- Made with Vue.js and Tailwind
 
