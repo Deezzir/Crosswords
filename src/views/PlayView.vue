@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import TheWelcome from "@/components/TheWelcome.vue";
 </script>
 
 <template>
     <main>
-        <TheWelcome />
+        This is play page
     </main>
 </template>
