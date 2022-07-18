@@ -22,28 +22,29 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="sticky top-0 z-40 w-full dark:bg-transparent backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-500/50 dark:border-slate-50/[0.06] bg-white/95 supports-backdrop-blur:bg-white/60">
+    <div
+        class="sticky top-0 z-40 w-full dark:bg-transparent backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-500/50 dark:border-slate-50/[0.06] bg-white/95 supports-backdrop-blur:bg-white/60">
         <div class="mx-auto max-w-7xl">
             <div class="py-3 px-4 border-b border-slate-900/10 lg:px-8 lg:border-0 dark:border-slate-300/10 lg:mx-0">
                 <div class="relative flex items-center">
 
-                    <NavLogo/>
+                    <NavLogo />
 
                     <div class="relative flex items-center ml-auto">
-                        
-                        <NavList/>
+
+                        <NavList />
 
                         <div class="flex items-center border-l border-slate-200 ml-6 pl-6 dark:border-slate-500/50">
-                            <button type="button" @click="isHidden = !isHidden">
+                            <button type="button" @click="isHidden = !isHidden" @blur.native="isHidden = false">
                                 <span class="dark:hidden">
-                                    <LightModeIcon isActive/>
+                                    <LightModeIcon isActive />
                                 </span>
                                 <span class="hidden dark:inline">
-                                    <DarkModeIcon isActive/>
+                                    <DarkModeIcon isActive />
                                 </span>
+                                <ThemeMode :isHidden="isHidden" />
                             </button>
 
-                            <ThemeMode :isHidden="isHidden" />
 
                             <a href="https://github.com/Deezzir"
                                 class="ml-6 block text-slate-400 hover:text-slate-500 dark:hover:text-slate-300">

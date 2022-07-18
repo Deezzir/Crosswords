@@ -13,4 +13,5 @@ module.exports = {
         extend: {},
     },
     plugins: [],
+    variants: ["responsive", "group-hover", "hover", "focus", "active", "group-active"],
 };
