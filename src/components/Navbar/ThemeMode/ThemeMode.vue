@@ -20,7 +20,10 @@ export default defineComponent({
     },
     methods: {
         setTheme(name: String) {
+            name = name.toLowerCase()
+
             localStorage.theme = name;
+
             if (name === "system")
                 localStorage.removeItem('theme');
 
@@ -30,8 +33,9 @@ export default defineComponent({
                 document.documentElement.classList.remove('dark')
             }
         },
-        getSelection(name: String) {
-            return name === localStorage.theme || ('theme' in localStorage && name === 'system')
+        isSelected(name: String) {
+            name = name.toLowerCase();
+            return name === localStorage.theme || (!('theme' in localStorage)    && name === 'system')
         }
     },
     props: {
@@ -42,10 +46,10 @@ export default defineComponent({
 
 <template>
     <ul v-show="!isHidden"
-        class="absolute z-50 top-full right-0 bg-white rounded-lg ring-1 ring-slate-900/10 shadow-lg overflow-hidden w-36 py-1 text-sm text-slate-700 font-semibold dark:bg-slate-800 dark:ring-0 dark:highlight-white/5 dark:text-slate-300 mt-8">
-        <ThemeModeOption v-for="theme in themes" @click="setTheme(theme.name.toLowerCase())" :isActive="getSelection(theme.name)">
+        class="absolute z-50 top-full right-0 bg-slate-100 rounded-lg ring-1 ring-slate-900/10 shadow-lg overflow-hidden w-36 py-2 text-md text-slate-700 dark:bg-slate-700 dark:ring-0 dark:highlight-white/5 dark:text-slate-300 mt-8">
+        <ThemeModeOption v-for="theme in themes" @click="setTheme(theme.name)" :isActive="isSelected(theme.name)">
             <template #icon>
-                <component class="mr-2" :isActive="getSelection(theme.name.toLowerCase())" :is="theme.icon" />
+                <component class="mr-2" :isActive="isSelected(theme.name)" :is="theme.icon" />
             </template>
             {{ theme.name }}
         </ThemeModeOption>
