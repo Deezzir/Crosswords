@@ -9,6 +9,7 @@ import NavLogo from './NavLogo.vue';
 import ThemeMode from "./ThemeMode/ThemeMode.vue";
 import NavList from './NavList.vue';
 import NavDrop from './NavDrop.vue';
+import type { Navigation } from './navbar';
 
 </script>
 

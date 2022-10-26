@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { defineComponent } from 'vue'
+import type { Navigation } from './navbar';
 import NavItem from './NavItem.vue';
 </script>
 

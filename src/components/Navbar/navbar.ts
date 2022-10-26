@@ -1,5 +1,4 @@
-// define Navigation type
-type Navigation = {
+export type Navigation = {
     name: string;
     href: string;
     current: boolean;
