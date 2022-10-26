@@ -9,7 +9,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <svg v-if="isActive" viewBox="0 0 24 24" fill="none" class="w-6 h-6">
+    <svg v-if="isActive" viewBox="0 0 24 24" fill="none" class="w-9 h-9 mr-2">
         <path fill-rule="evenodd" clip-rule="evenodd"
             d="M17.715 15.15A6.5 6.5 0 0 1 9 6.035C6.106 6.922 4 9.645 4 12.867c0 3.94 3.153 7.136 7.042 7.136 3.101 0 5.734-2.032 6.673-4.853Z"
             class="fill-sky-400/20">
@@ -23,7 +23,7 @@ export default defineComponent({
             class="fill-sky-500">
         </path>
     </svg>
-    <svg v-else viewBox="0 0 24 24" fill="none" class="w-6 h-6 mr-2">
+    <svg v-else viewBox="0 0 24 24" fill="none" class="w-9 h-9 mr-2">
         <path fill-rule="evenodd" clip-rule="evenodd"
             d="M17.715 15.15A6.5 6.5 0 0 1 9 6.035C6.106 6.922 4 9.645 4 12.867c0 3.94 3.153 7.136 7.042 7.136 3.101 0 5.734-2.032 6.673-4.853Z"
             class="fill-transparent">

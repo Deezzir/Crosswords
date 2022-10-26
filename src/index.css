@@ -1,3 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen&family=Ubuntu&family=Ubuntu+Mono&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        @apply 2xl:text-[18px] xl:text-[16px] lg:text-[14px] md:text-[12px] text-[10px];
+    }
+
+    body {
+        font-family: 'Ubuntu', sans-serif;
+    }
+}
