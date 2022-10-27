@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { defineComponent } from 'vue'
-import type { Navigation } from './navbar';
+import { defineComponent, type PropType } from "vue";
+import type { Navigation } from "./navbar";
 </script>
 
 <script lang="ts">
 export default defineComponent({
     props: {
         nav: {
-            type: Object as () => Navigation,
+            type: Object as PropType<Navigation>,
             required: true,
         },
     },

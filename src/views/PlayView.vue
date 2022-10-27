@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Crossword from '@/components/Crossword/Crossword.vue';
+import Crossword from "@/components/Crossword/Crossword.vue";
 </script>
 
 <template>

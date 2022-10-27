@@ -1,57 +1,114 @@
 <script setup lang="ts">
-import { defineAsyncComponent, defineComponent, markRaw } from "vue"
+import { defineAsyncComponent, defineComponent, markRaw, ref } from "vue";
 import ThemeModeOption from "./ThemeModeOption.vue";
-
 import {
-    LightModeIcon
-} from '@/components/icons/index'
+    Listbox,
+    ListboxButton,
+    ListboxOptions,
+    ListboxOption,
+} from "@headlessui/vue";
+import { LightModeIcon, DarkModeIcon } from "@/components/icons";
 </script>
 
 <script lang="ts">
 export default defineComponent({
     data() {
         return {
-            themes: [
-                { name: 'Light',  icon: markRaw(defineAsyncComponent(() => import('@/components/icons/LightModeIcon.vue') ))},
-                { name: 'Dark',   icon: markRaw(defineAsyncComponent(() => import('@/components/icons/DarkModeIcon.vue') ))},
-                { name: 'System', icon: markRaw(defineAsyncComponent(() => import('@/components/icons/SystemModeIcon.vue') ))},
-            ],
-        }
+            themes: {
+                light: {
+                    name: "Light",
+                    icon: markRaw(
+                        defineAsyncComponent(
+                            () => import("@/components/icons/LightModeIcon.vue")
+                        )
+                    ),
+                },
+                dark: {
+                    name: "Dark",
+                    icon: markRaw(
+                        defineAsyncComponent(
+                            () => import("@/components/icons/DarkModeIcon.vue")
+                        )
+                    ),
+                },
+                system: {
+                    name: "System",
+                    icon: markRaw(
+                        defineAsyncComponent(
+                            () =>
+                                import("@/components/icons/SystemModeIcon.vue")
+                        )
+                    ),
+                },
+            },
+            selectedTheme: ref(),
+        };
     },
     methods: {
         setTheme(name: String) {
-            name = name.toLowerCase()
-
+            name = name.toLowerCase();
             localStorage.theme = name;
-
-            if (name === "system")
-                localStorage.removeItem('theme');
-
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark')
+            if (name === "system") localStorage.removeItem("theme");
+            if (
+                localStorage.theme === "dark" ||
+                (!("theme" in localStorage) &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches)
+            ) {
+                document.documentElement.classList.add("dark");
             } else {
-                document.documentElement.classList.remove('dark')
+                document.documentElement.classList.remove("dark");
             }
         },
-        isSelected(name: String) {
-            name = name.toLowerCase();
-            return name === localStorage.theme || (!('theme' in localStorage)    && name === 'system')
-        }
+        getTheme() {
+            if ("theme" in localStorage) {
+                if (localStorage.theme === "dark") return ref(this.themes.dark);
+                else return ref(this.themes.light);
+            } else {
+                return ref(this.themes.system);
+            }
+        },
     },
-    props: {
-        isHidden: Boolean
+    mounted: function () {
+        this.selectedTheme = this.getTheme();
     },
+    components: { Listbox, ListboxButton, ListboxOptions },
 });
 </script>
 
 <template>
-    <ul v-show="!isHidden"
-        class="absolute z-50 top-full right-0 bg-slate-100 rounded-lg ring-1 ring-slate-900/10 shadow-lg overflow-hidden w-36 py-2 text-md text-slate-700 dark:bg-slate-700 dark:ring-0 dark:highlight-white/5 dark:text-slate-300 mt-8">
-        <ThemeModeOption v-for="theme in themes" @click="setTheme(theme.name)" :isActive="isSelected(theme.name)">
-            <template #icon>
-                <component class="mr-2" :isActive="isSelected(theme.name)" :is="theme.icon" />
-            </template>
-            {{ theme.name }}
-        </ThemeModeOption>
-    </ul>
+    <Listbox v-model="selectedTheme">
+        <ListboxButton>
+            <span class="dark:hidden">
+                <LightModeIcon isActive />
+            </span>
+            <span class="hidden dark:inline">
+                <DarkModeIcon isActive />
+            </span>
+        </ListboxButton>
+
+        <Transition
+            leave-active-class="transition duration-100 ease-in"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0">
+            <ListboxOptions
+                class="text-md dark:highlight-white/5 absolute top-[70%] right-[10vw] z-50 mt-8 w-36 overflow-hidden rounded-lg bg-slate-100 py-2 text-slate-700 shadow-lg ring-1 ring-slate-900/10 dark:bg-slate-700 dark:text-slate-300 dark:ring-0">
+                <ListboxOption
+                    v-for="theme in themes"
+                    :value="theme"
+                    v-slot="{ selected }">
+                    <ThemeModeOption
+                        @click="setTheme(theme.name)"
+                        :isActive="selected">
+                        <template #icon>
+                            <component
+                                class="mr-2"
+                                :isActive="selected"
+                                :is="theme.icon" />
+                        </template>
+                        {{ theme.name }}
+                    </ThemeModeOption>
+                </ListboxOption>
+            </ListboxOptions>
+        </Transition>
+    </Listbox>
 </template>
