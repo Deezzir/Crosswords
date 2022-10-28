@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue";
 var crossword = ref<HTMLCanvasElement | null>(null);
 
 onMounted(() => {
-    var heightRatio = 3;
+    var heightRatio = 4;
     if (crossword.value) {
         crossword.value.height = crossword.value.width * heightRatio;
     }
@@ -14,6 +14,6 @@ onMounted(() => {
 <template>
     <canvas
         ref="crossword"
-        class="w-11/12 border-8 border-slate-600 bg-slate-100 dark:border-[#174dbe] dark:bg-slate-300">
+        class="w-11/12 border-8 bg-slate-100 border-[#174dbe] dark:bg-slate-300">
     </canvas>
 </template>

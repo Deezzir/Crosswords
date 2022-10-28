@@ -8,6 +8,7 @@ import {
     ListboxOption,
 } from "@headlessui/vue";
 import { LightModeIcon, DarkModeIcon } from "@/components/icons";
+import { ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 </script>
 
 <script lang="ts">
@@ -44,6 +45,12 @@ export default defineComponent({
             selectedTheme: ref(),
         };
     },
+    props: {
+        isDropdown: {
+            type: Boolean,
+            default: false,
+        },
+    },
     methods: {
         setTheme(name: String) {
             name = name.toLowerCase();
@@ -68,7 +75,7 @@ export default defineComponent({
             }
         },
     },
-    mounted: function () {
+    mounted () {
         this.selectedTheme = this.getTheme();
     },
     components: { Listbox, ListboxButton, ListboxOptions },
@@ -77,12 +84,19 @@ export default defineComponent({
 
 <template>
     <Listbox v-model="selectedTheme">
-        <ListboxButton>
-            <span class="dark:hidden">
-                <LightModeIcon isActive />
+        <ListboxButton class="inline-flex items-center" :class="isDropdown && 'rounded-xl shadow-sm dark:bg-slate-900/50 ring-1 dark:text-white p-2 ring-slate-900/30 dark:ring-0'">
+            <span>
+                <LightModeIcon :isActive="!isDropdown" class="dark:hidden" />
+                <DarkModeIcon
+                    :isActive="!isDropdown"
+                    class="hidden dark:inline" />
             </span>
-            <span class="hidden dark:inline">
-                <DarkModeIcon isActive />
+            <span v-if="selectedTheme && isDropdown" class="text-2xl pl-3">{{ selectedTheme.name }}</span>
+            <span v-show="isDropdown"
+                class="pointer-events-none pl-4">
+                <ChevronUpDownIcon
+                    class="h-7 w-7 text-gray-300"
+                    aria-hidden="true" />
             </span>
         </ListboxButton>
 
@@ -91,7 +105,7 @@ export default defineComponent({
             leave-from-class="opacity-100"
             leave-to-class="opacity-0">
             <ListboxOptions
-                class="text-md dark:highlight-white/5 absolute top-[70%] right-[10vw] z-50 mt-8 w-36 overflow-hidden rounded-lg bg-slate-100 py-2 text-slate-700 shadow-lg ring-1 ring-slate-900/10 dark:bg-slate-700 dark:text-slate-300 dark:ring-0">
+                class="text-md dark:highlight-white/5 absolute top-[70%] right-[10vw] z-50 mt-8 w-36 overflow-hidden rounded-lg bg-slate-100 py-2 text-slate-700 shadow-lg ring-1 ring-slate-900/20 dark:bg-slate-700 dark:text-slate-300 dark:ring-0">
                 <ListboxOption
                     v-for="theme in themes"
                     :value="theme"

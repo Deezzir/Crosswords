@@ -8,7 +8,6 @@ import { GitHubIcon } from "@/components/icons";
 import NavLogo from "./NavLogo.vue";
 import ThemeMode from "./ThemeMode/ThemeMode.vue";
 import NavList from "./NavList.vue";
-import NavDrop from "./NavDrop.vue";
 import type { Navigation } from "./navbar";
 </script>
 
@@ -37,13 +36,23 @@ export default defineComponent({
             });
         },
     },
-    components: { NavList, NavLogo, ThemeMode, NavDrop },
+    methods: {
+        overflow(open: boolean) {
+            if (open) {
+                document.documentElement.classList.add("overflow-hidden");
+            } else {
+                document.documentElement.classList.remove("overflow-hidden");
+            }
+        },
+    },
+    components: { NavList, NavLogo, ThemeMode },
 });
 </script>
 
 <template>
     <Disclosure
         as="nav"
+        id="navbar"
         v-slot="{ open }"
         class="sticky top-0 z-40 flex h-[80px] border-b border-slate-500/50 bg-slate-200/50 backdrop-blur transition-colors duration-500 dark:border-slate-50/[0.05] dark:bg-slate-800/80">
         <div
@@ -52,6 +61,7 @@ export default defineComponent({
 
             <div class="flex items-center">
                 <DisclosureButton
+                    @click="overflow(!open)"
                     class="rounded-md p-2 text-black dark:text-white sm:hidden">
                     <Bars3Icon v-if="!open" class="block h-10 w-10" />
                     <XMarkIcon v-else class="block h-10 w-10" />
@@ -62,12 +72,12 @@ export default defineComponent({
                 </div>
 
                 <div
-                    class="ml-6 inline-flex items-center border-l border-slate-200 pl-6 dark:border-slate-500/50">
+                    class="ml-6 hidden items-center border-0 pl-6 sm:inline-flex sm:border-l sm:border-slate-200 sm:dark:border-slate-500/50">
                     <ThemeMode />
 
                     <a
                         href="https://github.com/Deezzir"
-                        class="ml-6 block text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300">
+                        class="ml-0 block text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300 sm:ml-6">
                         <GitHubIcon />
                     </a>
                 </div>
@@ -82,9 +92,21 @@ export default defineComponent({
             leave-from-class="transform scale-100 opacity-100"
             leave-to-class="transform scale-95 opacity-0">
             <DisclosurePanel
-                class="absolute top-[80px] w-full border-b border-slate-500/50 bg-slate-200/50 px-[10vw] py-[2vh] dark:border-slate-50/[0.05] dark:bg-slate-800/80 sm:hidden"
+                class="absolute top-[80px] w-full border-b border-slate-500/50 bg-slate-200/60 px-[10vw] py-[2vh] dark:border-slate-50/[0.05] dark:bg-slate-800/90 sm:hidden"
                 v-slot="{ close }">
-                <NavDrop :navs="navigations" @click="close()" />
+                <NavList is-dropdown :navs="navigations" @click="close()" />
+                <div
+                    class="mt-[2vh] flex border-t border-slate-500/50 pt-[1vh]">
+                    <div
+                        class="inline-flex grow items-center justify-center space-x-10">
+                        <a
+                            href="https://github.com/Deezzir"
+                            class="ml-0 block text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300 sm:ml-6">
+                            <GitHubIcon />
+                        </a>
+                        <ThemeMode is-dropdown />
+                    </div>
+                </div>
             </DisclosurePanel>
         </Transition>
     </Disclosure>
