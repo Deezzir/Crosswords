@@ -11,35 +11,19 @@ export default defineComponent({
             type: Array<Navigation>,
             required: true,
         },
-        isDropdown: {
-            type: Boolean,
-            default: false,
-        },
     },
-    components: { NavItem },
+    components: {
+        NavItem,
+    },
 });
 </script>
 
 <template>
-    <ul
-        :class="[
-            isDropdown ? 'flex-col items-center space-y-5' : 'space-x-10 leading-6',
-            'flex text-2xl text-white',
-        ]">
-        <li
-            v-for="nav in navs"
-            :class="isDropdown && 'inline-flex h-[45px] w-full text-center items-center'">
-            <NavItem
-                :nav="nav"
-                class="rounded-md"
-                :class="[
-                    nav.current
-                        ? 'bg-slate-100 dark:bg-slate-900 text-black dark:text-white'
-                        : 'hover:bg-slate-800/80  hover:opacity-70 dark:hover:bg-slate-700',
-                    isDropdown
-                        ? 'grow px-[0.8vw] py-[1.2vh]'
-                        : 'px-[1.2vw] py-[15px]',
-                ]" />
-        </li>
-    </ul>
+    <div class="hidden sm:block">
+        <ul class="flex space-x-10 text-2xl leading-6 text-white">
+            <li v-for="nav in navs">
+                <NavItem :nav="nav" />
+            </li>
+        </ul>
+    </div>
 </template>

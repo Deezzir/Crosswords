@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue";
 var crossword = ref<HTMLCanvasElement | null>(null);
 
 onMounted(() => {
-    var heightRatio = 4;
+    var heightRatio = 1;
     if (crossword.value) {
         crossword.value.height = crossword.value.width * heightRatio;
     }
