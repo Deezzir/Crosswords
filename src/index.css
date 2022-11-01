@@ -6,6 +6,12 @@
 
 
 @layer base {
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     html {
         scroll-behavior: smooth;
         @apply 2xl:text-[18px] xl:text-[16px] lg:text-[14px] md:text-[12px] text-[10px];

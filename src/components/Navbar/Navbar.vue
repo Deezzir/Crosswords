@@ -59,7 +59,7 @@ export default defineComponent({
     <Menu
         as="nav"
         v-slot="{ open }"
-        class="sticky top-0 z-40 flex h-[80px] bg-slate-900/[.90] backdrop-blur transition-colors duration-500 dark:border-b dark:border-slate-50/[0.05] dark:bg-slate-800/80">
+        class="sticky top-0 z-40 flex h-[80px] bg-slate-900/[.90] backdrop-blur transition-colors duration-500 border-0 dark:border-b dark:border-slate-50/[0.05] dark:bg-slate-800/80">
         <div
             class="m-auto flex w-full items-center justify-between py-3 px-[10vw]">
             <NavLogo />
