@@ -6,11 +6,11 @@ const gridSize = 18;
 
 const drawGrid = (crossword: HTMLCanvasElement) => {
     let ctx = crossword.getContext("2d");
-    let size = crossword.width
+    let size = crossword.width;
 
     if (!ctx) return;
 
-    let squareSize = Math.floor(size / (gridSize+0.5));
+    let squareSize = Math.floor(size / (gridSize + 0.25));
     let paddingX = size - gridSize * squareSize;
     let paddingY = size - gridSize * squareSize;
 
@@ -19,8 +19,8 @@ const drawGrid = (crossword: HTMLCanvasElement) => {
     let paddingR = size - gridSize * squareSize - paddingL;
     let paddingB = size - gridSize * squareSize - paddingT;
 
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 0.8;
+    ctx.strokeStyle = "gray";
+    ctx.lineWidth = 0.5;
 
     ctx.beginPath();
     for (var x = paddingL; x <= size - paddingR; x += squareSize) {
@@ -37,14 +37,19 @@ const drawGrid = (crossword: HTMLCanvasElement) => {
 onMounted(() => {
     if (crossword.value) {
         crossword.value.height = crossword.value.width;
+        console.log(crossword.value.width);
         drawGrid(crossword.value);
     }
 });
 </script>
 
 <template>
-    <canvas
-        ref="crossword"
-        class="w-11/12 border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300">
-    </canvas>
+    <div>
+        <canvas
+            ref="crossword"
+            :width="800"
+            :height="800"
+            class="w-full border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300">
+        </canvas>
+    </div>
 </template>
