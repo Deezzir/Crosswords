@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { defineComponent } from "vue";
-import Theme from "./Theme.vue";
-import GitHubLink from "./GitHubLink.vue";
+import { defineComponent } from 'vue';
+import Theme from './Theme.vue';
+import GitHubLink from './GitHubLink.vue';
 </script>
 
 <script lang="ts">
@@ -9,9 +9,9 @@ export default defineComponent({
     props: {
         isDropdown: {
             type: Boolean,
-            default: false,
-        },
-    },
+            default: false
+        }
+    }
 });
 </script>
 
@@ -22,9 +22,7 @@ export default defineComponent({
         <Theme />
         <GitHubLink />
     </div>
-    <div 
-        v-else 
-        class="inline-flex grow items-center justify-center space-x-10">
+    <div v-else class="inline-flex grow items-center justify-center space-x-10">
         <GitHubLink />
         <Theme is-dropdown />
     </div>

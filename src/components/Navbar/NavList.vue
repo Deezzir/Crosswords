@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { defineComponent } from "vue";
-import type { Navigation } from "./navbar";
-import NavItem from "./NavItem.vue";
+import { defineComponent } from 'vue';
+import type { Navigation } from './navbar';
+import NavItem from './NavItem.vue';
 </script>
 
 <script lang="ts">
@@ -9,19 +9,19 @@ export default defineComponent({
     props: {
         navs: {
             type: Array<Navigation>,
-            required: true,
-        },
+            required: true
+        }
     },
     components: {
-        NavItem,
-    },
+        NavItem
+    }
 });
 </script>
 
 <template>
     <div class="hidden sm:block">
         <ul class="flex space-x-10 text-2xl leading-6 text-white">
-            <li v-for="nav in navs">
+            <li v-for="nav in navs" :key="nav.id">
                 <NavItem :nav="nav" />
             </li>
         </ul>
