@@ -1,19 +1,53 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from 'vue';
 
-var crossword = ref<HTMLCanvasElement | null>(null);
+const crossword = ref<HTMLCanvasElement | null>(null);
+const gridSize = 18;
+
+const drawGrid = (crossword: HTMLCanvasElement) => {
+    const ctx = crossword.getContext('2d');
+    const size = crossword.width;
+
+    if (!ctx) return;
+
+    const squareSize = Math.floor(size / (gridSize + 0.5));
+    const padding = size - gridSize * squareSize;
+
+    const paddingL = padding / 2;
+    const paddingT = padding / 2;
+    const paddingR = size - gridSize * squareSize - paddingL;
+    const paddingB = size - gridSize * squareSize - paddingT;
+
+    ctx.strokeStyle = 'gray';
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+    for (let x = paddingL; x <= size - paddingR; x += squareSize) {
+        ctx.moveTo(x, paddingT);
+        ctx.lineTo(x, size - paddingB);
+    }
+    for (let y = paddingT; y <= size - paddingB; y += squareSize) {
+        ctx.moveTo(paddingL, y);
+        ctx.lineTo(size - paddingR, y);
+    }
+    ctx.stroke();
+};
 
 onMounted(() => {
-    var heightRatio = 4;
     if (crossword.value) {
-        crossword.value.height = crossword.value.width * heightRatio;
+        crossword.value.height = crossword.value.width;
+        drawGrid(crossword.value);
     }
 });
 </script>
 
 <template>
-    <canvas
-        ref="crossword"
-        class="w-11/12 border-8 bg-slate-100 border-[#174dbe] dark:bg-slate-300">
-    </canvas>
+    <div>
+        <canvas
+            ref="crossword"
+            :width="740"
+            :height="740"
+            class="w-full border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300">
+        </canvas>
+    </div>
 </template>
