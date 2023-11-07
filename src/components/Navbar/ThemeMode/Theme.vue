@@ -3,7 +3,7 @@
 import { defineAsyncComponent, defineComponent, markRaw, ref } from 'vue';
 import ThemeOption from './ThemeOption.vue';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue';
-import { LightModeIcon, DarkModeIcon } from '@/components/icons';
+import { LightModeIcon, DarkModeIcon } from '@/components/Icons';
 import { ChevronUpDownIcon } from '@heroicons/vue/20/solid';
 </script>
 
@@ -15,17 +15,17 @@ export default defineComponent({
                 light: {
                     id: 1,
                     name: 'Light',
-                    icon: markRaw(defineAsyncComponent(() => import('@/components/icons/LightModeIcon.vue')))
+                    icon: markRaw(defineAsyncComponent(() => import('@/components/Icons/LightModeIcon.vue')))
                 },
                 dark: {
                     id: 2,
                     name: 'Dark',
-                    icon: markRaw(defineAsyncComponent(() => import('@/components/icons/DarkModeIcon.vue')))
+                    icon: markRaw(defineAsyncComponent(() => import('@/components/Icons/DarkModeIcon.vue')))
                 },
                 system: {
                     id: 3,
                     name: 'System',
-                    icon: markRaw(defineAsyncComponent(() => import('@/components/icons/SystemModeIcon.vue')))
+                    icon: markRaw(defineAsyncComponent(() => import('@/components/Icons/SystemModeIcon.vue')))
                 }
             },
             selectedTheme: ref()
