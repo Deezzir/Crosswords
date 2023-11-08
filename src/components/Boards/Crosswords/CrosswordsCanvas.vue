@@ -1,42 +1,27 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { defineComponent } from 'vue';
+import { CrosswordsBoard } from './crosswords';
+</script>
 
-const crossword = ref<HTMLCanvasElement | null>(null);
-const gridSize = 18;
-
-const drawGrid = (crossword: HTMLCanvasElement) => {
-    const ctx = crossword.getContext('2d');
-    const size = crossword.width;
-
-    if (!ctx) return;
-
-    const squareSize = Math.floor(size / (gridSize + 0.5));
-    const padding = size - gridSize * squareSize;
-
-    const paddingL = padding / 2;
-    const paddingT = padding / 2;
-    const paddingR = size - gridSize * squareSize - paddingL;
-    const paddingB = size - gridSize * squareSize - paddingT;
-
-    ctx.strokeStyle = 'gray';
-    ctx.lineWidth = 1;
-
-    ctx.beginPath();
-    for (let x = paddingL; x <= size - paddingR; x += squareSize) {
-        ctx.moveTo(x, paddingT);
-        ctx.lineTo(x, size - paddingB);
-    }
-    for (let y = paddingT; y <= size - paddingB; y += squareSize) {
-        ctx.moveTo(paddingL, y);
-        ctx.lineTo(size - paddingR, y);
-    }
-    ctx.stroke();
-};
-
-onMounted(() => {
-    if (crossword.value) {
-        crossword.value.height = crossword.value.width;
-        drawGrid(crossword.value);
+<script lang="ts">
+export default defineComponent({
+    props: {
+        board: {
+            type: CrosswordsBoard,
+            required: true
+        }
+    },
+    data() {
+        return {
+            canvas: null as HTMLCanvasElement | null
+        };
+    },
+    mounted() {
+        this.canvas = this.$refs.crossword as HTMLCanvasElement;
+        this.canvas.height = this.canvas.width;
+        if (this.canvas) {
+            this.board.drawGrid(this.canvas);
+        }
     }
 });
 </script>
@@ -47,7 +32,7 @@ onMounted(() => {
             ref="crossword"
             :width="740"
             :height="740"
-            class="w-full border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300">
+            class="mb-8 w-full border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300 sm:mb-0">
         </canvas>
     </div>
 </template>

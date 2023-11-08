@@ -1,20 +1,57 @@
 <script setup lang="ts">
-import PlayIcon from '@/components/Icons/PlayIcon.vue';
+import { PauseIcon, PlayIcon } from '@/components/Icons';
+import { defineComponent } from 'vue';
+import { SudokuBoard } from './sudoku';
+</script>
+
+<script lang="ts">
+export default defineComponent({
+    props: {
+        board: {
+            type: SudokuBoard,
+            required: true
+        }
+    },
+    methods: {
+        setPaused(paused: boolean) {
+            this.$emit('set-paused', paused);
+        }
+    },
+    computed: {
+        timePassedFormatted() {
+            const timePassed = this.board.getTimePassed();
+            const minutes = Math.floor(timePassed / 60);
+            const seconds = timePassed % 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }
+});
 </script>
 
 <template>
     <div class="flex flex-row items-center justify-end text-xl text-gray-700 dark:text-gray-500">
         <div class="pr-6">
-            <p>Mistakes: <span class="font-bold">0/3</span></p>
+            <p>
+                Mistakes: <span class="font-bold">{{ board.getMistakes() }}/3</span>
+            </p>
         </div>
         <div class="pr-6">
-            <p>Score: <span class="font-bold">0</span></p>
+            <p>
+                Score: <span class="font-bold">{{ board.getScore() }}</span>
+            </p>
         </div>
         <div class="pr-6">
-            <p>00:00</p>
+            <p>{{ timePassedFormatted }}</p>
         </div>
-        <button>
-            <PlayIcon />
+        <button
+            @click="setPaused(!board.getPaused())"
+            class="text-gray-600 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-400">
+            <div v-if="board.getPaused()">
+                <PlayIcon />
+            </div>
+            <div v-else>
+                <PauseIcon />
+            </div>
         </button>
     </div>
 </template>

@@ -1,14 +1,18 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, reactive } from 'vue';
 import SudokuCanvas from './SudokuCanvas.vue';
 import SudokuPlay from './SudokuPlay.vue';
 import Difficulty from '../Common/Difficulty.vue';
 import SudokuStats from './SudokuStats.vue';
-import handler from './sudoku';
+import { getSudokuBoard, solveSudokuBoard, convertSudokuBoard, SudokuBoard } from './sudoku';
+import mitt from 'mitt';
 </script>
 
 <script lang="ts">
+const emitter = mitt();
+const gridSize = 9;
+
 export default defineComponent({
     data() {
         return {
@@ -18,30 +22,69 @@ export default defineComponent({
                 { id: 3, name: 'Hard' }
             ],
             curDifficulty: 1,
-            board: ''
+            board: reactive(new SudokuBoard(gridSize)),
+            intervalId: null as ReturnType<typeof setInterval> | null
         };
     },
     mounted() {
         this.fetchSudokuBoard();
+        document.addEventListener('visibilitychange', this.handleVisibilityChange);
+        document.addEventListener('keydown', this.handleSpacebar);
+
+        this.intervalId = setInterval(this.incrementTimePassed, 1000);
+        emitter.on('destroy', () => {
+            if (this.intervalId) {
+                clearInterval(this.intervalId);
+            }
+        });
     },
     methods: {
         async fetchSudokuBoard() {
             try {
                 const difficultyItem = this.difficulties.find((diff) => diff.id === this.curDifficulty);
                 if (!difficultyItem) {
-                    throw new Error('Difficulty not found.');
+                    throw new Error('Difficulty does not exist.');
                 }
-                const puzzle = await handler.getSudokuBoard(difficultyItem.name);
-                this.board = puzzle;
+                const puzzle = await getSudokuBoard(difficultyItem.name);
+                this.board.setBoard(convertSudokuBoard(puzzle));
+
+                const solution = await solveSudokuBoard(puzzle);
+                this.board.setSolution(convertSudokuBoard(solution) as number[][]);
             } catch (error) {
                 console.error('Error fetching Sudoku board:', error);
-                this.board = '';
+                this.board.setBoard([]);
             }
         },
         async handleDifficultyChange(difficulty: number) {
             this.curDifficulty = difficulty;
-            await this.fetchSudokuBoard();
+            this.resetGame();
+        },
+        resetGame() {
+            this.fetchSudokuBoard();
+            this.board.resetState();
+        },
+        handleSpacebar() {
+            this.board.togglePaused();
+        },
+        handleVisibilityChange() {
+            if (document.hidden || document.visibilityState === 'hidden') {
+                this.board.setPaused(true);
+            }
+        },
+        handlePauseChange(paused: boolean) {
+            this.board.setPaused(paused);
+        },
+        incrementTimePassed() {
+            if (!this.board.getPaused()) {
+                this.board.incrementTimePassed();
+            }
         }
+    },
+    beforeUnmount() {
+        document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+        document.removeEventListener('keydown', this.handleSpacebar);
+        emitter.emit('destroy');
+        emitter.off('destroy');
     }
 });
 </script>
@@ -52,12 +95,12 @@ export default defineComponent({
             <Difficulty
                 :difficulties="difficulties"
                 :cur-difficulty="curDifficulty"
-                @difficulty-set="handleDifficultyChange" />
-            <SudokuStats />
+                @set-difficulty="handleDifficultyChange" />
+            <SudokuStats :board="board" @set-paused="handlePauseChange" />
         </div>
         <div class="grid grid-cols-1 items-center justify-items-center gap-x-16 lg:grid-cols-2">
-            <SudokuCanvas :board="board" />
-            <SudokuPlay />
+            <SudokuCanvas :board="board" @set-paused="handlePauseChange" />
+            <SudokuPlay @newgame-clicked="resetGame" />
         </div>
     </div>
 </template>

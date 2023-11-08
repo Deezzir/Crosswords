@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { PenIcon, EraseIcon, UndoIcon, BulbIcon } from '@/components/Icons';
+import { defineComponent } from 'vue';
 
 // define button list
 const components = [
@@ -8,6 +9,16 @@ const components = [
     { name: 'Pen', obj: PenIcon },
     { name: 'Hint', obj: BulbIcon }
 ];
+</script>
+
+<script lang="ts">
+export default defineComponent({
+    methods: {
+        newGameBtnClicked() {
+            this.$emit('newgame-clicked');
+        }
+    }
+});
 </script>
 
 <template>
@@ -31,6 +42,7 @@ const components = [
         </div>
         <div class="flex">
             <button
+                @click="newGameBtnClicked"
                 class="focus:shadow-outline grow transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 px-4 py-4 text-3xl font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none">
                 New Game
             </button>

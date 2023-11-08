@@ -1,9 +1,24 @@
+<script setup lang="ts">
+import { defineComponent } from 'vue';
+</script>
+
+<script lang="ts">
+export default defineComponent({
+    methods: {
+        newGameBtnClicked() {
+            this.$emit('newgame-clicked');
+        }
+    }
+});
+</script>
+
 <template>
-    <div class="grid grid-cols-1">
+    <div class="mt-14 grid h-full w-full grid-cols-1 content-center gap-4 sm:mt-0">
         <div class="flex">
             <button
-                class="rounded-md border-0 bg-gradient-to-l from-[#174dbe] to-[#0010a4] bg-[size:300%_100%] px-9 py-2 text-2xl text-white transition-all duration-300 ease-in-out">
-                Play
+                @click="newGameBtnClicked"
+                class="focus:shadow-outline grow transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 px-4 py-4 text-3xl font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none">
+                WIP
             </button>
         </div>
     </div>

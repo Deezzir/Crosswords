@@ -22,7 +22,7 @@ export default defineComponent({
             return difficulty === this.curDifficulty;
         },
         setDifficulty(difficulty: number) {
-            this.$emit('difficulty-set', difficulty);
+            this.$emit('set-difficulty', difficulty);
         },
         getCurDifficultyName() {
             return this.difficulties.find((difficulty) => difficulty.id === this.curDifficulty)?.name;
