@@ -71,7 +71,7 @@ export default defineComponent({
                     const x = paddingL + col * squareSize + squareSize / 2;
                     const y = paddingT + row * squareSize + squareSize / 2;
 
-                    ctx.fillText(value.toString(), x, y + 5);
+                    ctx.fillText(value.toString(), x, y + 6);
                 }
             }
         }
