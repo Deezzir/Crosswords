@@ -9,7 +9,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <svg viewBox="0 0 24 24" fill="none" class="w-12 h-12 sm:w-10 sm:h-10">
+    <svg viewBox="0 0 24 24" fill="none" class="h-12 w-12 sm:h-10 sm:w-10">
         <path
             fill-rule="evenodd"
             clip-rule="evenodd"

@@ -9,21 +9,15 @@ import Navbar from './components/Navbar/Navbar.vue';
     <Loader />
     <Navbar />
     <RouterView v-slot="{ Component }">
-        <transition mode="out-in" appear>
+        <Transition
+            enter-active-class="transition opacity 0.5s ease"
+            leave-active-class="transition opacity 0.5s ease"
+            enter-from-class="opacity-0"
+            leave-to-class="opacity-0"
+            mode="out-in"
+            appear>
             <component :is="Component" />
-        </transition>
+        </Transition>
     </RouterView>
     <FooterVue />
 </template>
-
-<style>
-.v-enter-active,
-.v-leave-active {
-    transition: opacity 0.5s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-    opacity: 0;
-}
-</style>
