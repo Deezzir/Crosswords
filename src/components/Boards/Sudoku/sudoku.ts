@@ -124,8 +124,7 @@ export const getSudokuBoard = async (difficulty: string): Promise<string> => {
     const options = {
         method: 'GET',
         headers: {
-            'X-RapidAPI-Key': import.meta.env.VITE_SUDOKU_API_KEY,
-            'X-RapidAPI-Host': import.meta.env.VITE_SUDOKU_API_HOST
+            'X-API-Key': import.meta.env.VITE_SUDOKU_API_KEY
         }
     };
 
@@ -135,10 +134,10 @@ export const getSudokuBoard = async (difficulty: string): Promise<string> => {
             throw new Error('Network response was not ok.');
         }
         const data = await response.json();
-        if (typeof data.puzzle !== 'string') {
+        if (typeof data.board !== 'string') {
             throw new Error('Puzzle is not a string.');
         }
-        return data.puzzle;
+        return data.board;
     } catch (error) {
         console.error(error);
         throw error;
@@ -148,14 +147,13 @@ export const getSudokuBoard = async (difficulty: string): Promise<string> => {
 export const solveSudokuBoard = async (board: string): Promise<string> => {
     const url = new URL(import.meta.env.VITE_SUDOKU_SOLVE_API_URL);
     url.search = new URLSearchParams({
-        puzzle: board
+        board: board
     }).toString();
 
     const options = {
         method: 'GET',
         headers: {
-            'X-RapidAPI-Key': import.meta.env.VITE_SUDOKU_API_KEY,
-            'X-RapidAPI-Host': import.meta.env.VITE_SUDOKU_API_HOST
+            'X-API-Key': import.meta.env.VITE_SUDOKU_API_KEY
         }
     };
 
@@ -168,6 +166,7 @@ export const solveSudokuBoard = async (board: string): Promise<string> => {
         if (typeof data.solution !== 'string') {
             throw new Error('Solution is not a string.');
         }
+        console.log(data);
         return data.solution;
     } catch (error) {
         console.error(error);

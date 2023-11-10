@@ -17,6 +17,7 @@ export default defineComponent({
         <div class="flex">
             <button
                 @click="newGameBtnClicked"
+                @keydown.space.prevent
                 class="focus:shadow-outline grow transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 px-4 py-4 text-3xl font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none">
                 WIP
             </button>

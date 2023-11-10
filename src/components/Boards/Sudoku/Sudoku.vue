@@ -23,13 +23,14 @@ export default defineComponent({
             ],
             curDifficulty: 1,
             board: reactive(new SudokuBoard(gridSize)),
+            loading: false,
             intervalId: null as ReturnType<typeof setInterval> | null
         };
     },
     mounted() {
         this.fetchSudokuBoard();
         document.addEventListener('visibilitychange', this.handleVisibilityChange);
-        document.addEventListener('keydown', this.handleSpacebar);
+        document.addEventListener('keydown', this.handleESC);
 
         this.intervalId = setInterval(this.incrementTimePassed, 1000);
         emitter.on('destroy', () => {
@@ -40,6 +41,7 @@ export default defineComponent({
     },
     methods: {
         async fetchSudokuBoard() {
+            this.loading = true;
             try {
                 const difficultyItem = this.difficulties.find((diff) => diff.id === this.curDifficulty);
                 if (!difficultyItem) {
@@ -53,6 +55,8 @@ export default defineComponent({
             } catch (error) {
                 console.error('Error fetching Sudoku board:', error);
                 this.board.setBoard([]);
+            } finally {
+                this.loading = false;
             }
         },
         async handleDifficultyChange(difficulty: number) {
@@ -63,8 +67,8 @@ export default defineComponent({
             this.fetchSudokuBoard();
             this.board.resetState();
         },
-        handleSpacebar() {
-            this.board.togglePaused();
+        handleESC(event: KeyboardEvent) {
+            if (event && event.code === 'Escape') this.board.togglePaused();
         },
         handleVisibilityChange() {
             if (document.hidden || document.visibilityState === 'hidden') {
@@ -75,14 +79,14 @@ export default defineComponent({
             this.board.setPaused(paused);
         },
         incrementTimePassed() {
-            if (!this.board.getPaused()) {
+            if (!this.board.getPaused() && !this.loading) {
                 this.board.incrementTimePassed();
             }
         }
     },
     beforeUnmount() {
         document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-        document.removeEventListener('keydown', this.handleSpacebar);
+        document.removeEventListener('keydown', this.handleESC);
         emitter.emit('destroy');
         emitter.off('destroy');
     }
@@ -99,7 +103,7 @@ export default defineComponent({
             <SudokuStats :board="board" @set-paused="handlePauseChange" />
         </div>
         <div class="grid grid-cols-1 items-center justify-items-center gap-x-16 lg:grid-cols-2">
-            <SudokuCanvas :board="board" @set-paused="handlePauseChange" />
+            <SudokuCanvas :board="board" @set-paused="handlePauseChange" :loading="loading" />
             <SudokuPlay @newgame-clicked="resetGame" />
         </div>
     </div>
