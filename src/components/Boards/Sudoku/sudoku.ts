@@ -3,13 +3,11 @@ import { Cursor } from '../Common/boards';
 
 export class SudokuBoard implements Board {
     gridSize: number;
-    board: Array<Array<number | null>> = [];
-    solution: Array<Array<number>> = [];
+    board: Array<Array<{ player: boolean; value: number | null; answer: number }>> = [];
     cursor: Cursor | null = null;
 
     // Game state
     paused: boolean = true;
-    started: boolean = false;
     score: number = 0;
     mistakes: number = 0;
     time: number = 0;
@@ -47,18 +45,22 @@ export class SudokuBoard implements Board {
 
         for (let row = 0; row < this.gridSize; row++) {
             for (let col = 0; col < this.gridSize; col++) {
-                const value = this.board[row][col];
-                if (!value) continue;
+                const cell = this.board[row][col];
+                if (!cell.value) continue;
 
                 const x = sizes.paddingL + col * sizes.squareSize + sizes.squareSize / 2;
                 const y = sizes.paddingT + row * sizes.squareSize + sizes.squareSize / 2;
 
-                if (value !== this.solution[row][col]) {
-                    ctx.fillStyle = 'red';
+                if (cell.value !== cell.answer) {
+                    ctx.fillStyle = 'rgb(239, 68, 68)';
                 } else {
-                    ctx.fillStyle = 'black';
+                    if (cell.player) {
+                        ctx.fillStyle = 'rgb(59, 130, 246)';
+                    } else {
+                        ctx.fillStyle = 'black';
+                    }
                 }
-                ctx.fillText(value.toString(), x, y + 6);
+                ctx.fillText(cell.value.toString(), x, y + 6);
             }
         }
     }
@@ -72,7 +74,7 @@ export class SudokuBoard implements Board {
         for (let i = 0; i < this.gridSize + 1; i++) {
             ctx.beginPath();
             ctx.strokeStyle = i % 3 === 0 ? 'black' : 'gray';
-            ctx.lineWidth = 1;
+            ctx.lineWidth = i % 3 === 0 ? 2 : 1;
 
             const x = sizes.paddingL + i * sizes.squareSize;
             const y = sizes.paddingT + i * sizes.squareSize;
@@ -87,7 +89,7 @@ export class SudokuBoard implements Board {
             ctx.stroke();
         }
     }
-    drawCursor(canvas: HTMLCanvasElement): void {
+    drawOutline(canvas: HTMLCanvasElement): void {
         const ctx = canvas.getContext('2d');
         const size = canvas.width;
         if (!ctx || !this.cursor) return;
@@ -97,9 +99,21 @@ export class SudokuBoard implements Board {
         const idy = this.cursor.getY();
         const x = sizes.paddingL + idx * sizes.squareSize;
         const y = sizes.paddingT + idy * sizes.squareSize;
+        const cur = this.board[idy][idx];
 
         ctx.fillStyle = 'rgba(37, 99, 235, 0.4)';
         ctx.fillRect(x, y, sizes.squareSize, sizes.squareSize);
+
+        for (let i = 0; i < this.gridSize; i++) {
+            for (let j = 0; j < this.gridSize; j++) {
+                const cell = this.board[i][j];
+                if (cell.value === cur.value && cur.value !== null && (i !== idy || j !== idx)) {
+                    const x_temp = sizes.paddingL + j * sizes.squareSize;
+                    const y_temp = sizes.paddingT + i * sizes.squareSize;
+                    ctx.fillRect(x_temp, y_temp, sizes.squareSize, sizes.squareSize);
+                }
+            }
+        }
 
         ctx.fillStyle = 'rgba(107, 114, 128, 0.3)';
         for (let i = 0; i < this.gridSize; i++) {
@@ -125,18 +139,34 @@ export class SudokuBoard implements Board {
             }
         }
     }
-    setBoard(board: Array<Array<number | null>>): void {
-        this.board = board;
+    setBoard(board: Array<Array<number | null>>, solution: Array<Array<number>>): void {
+        if (
+            board.length !== solution.length ||
+            board[0].length !== solution[0].length ||
+            board.length !== this.gridSize ||
+            board[0].length !== this.gridSize
+        ) {
+            throw new Error('Board and Solution are not the same size.');
+        }
+
+        this.board = []; // Initialize this.board as an empty array
+
+        for (let row = 0; row < this.gridSize; row++) {
+            this.board[row] = []; // Initialize each row as an empty array
+            for (let col = 0; col < this.gridSize; col++) {
+                this.board[row][col] = {
+                    player: false,
+                    value: board[row][col],
+                    answer: solution[row][col]
+                };
+            }
+        }
     }
     isBoardValid(): boolean {
         return this.board.length > 0;
     }
-    setSolution(solution: Array<Array<number>>): void {
-        this.solution = solution;
-    }
     resetState(): void {
         this.paused = false;
-        this.started = false;
         this.score = 0;
         this.mistakes = 0;
         this.time = 0;
@@ -183,17 +213,34 @@ export class SudokuBoard implements Board {
             this.cursor.set(idx, idy);
         }
     }
-    setNumber(num: number): void {
+    setNumber(num: number): boolean {
+        if (!this.cursor) return false;
+
+        const idx = this.cursor.getX();
+        const idy = this.cursor.getY();
+
+        if (this.board[idy][idx].value === null) {
+            this.board[idy][idx].value = num;
+            this.board[idy][idx].player = true;
+            if (this.board[idy][idx].answer !== num) {
+                this.mistakes++;
+            }
+            return true;
+        }
+        return false;
+    }
+    resetCursor(): void {
+        this.cursor = null;
+    }
+    eraseNumber(): void {
         if (!this.cursor) return;
 
         const idx = this.cursor.getX();
         const idy = this.cursor.getY();
 
-        if (this.board[idy][idx] === null) {
-            this.board[idy][idx] = num;
-            if (this.solution[idy][idx] !== num) {
-                this.mistakes++;
-            }
+        if (this.board[idy][idx].player) {
+            this.board[idy][idx].value = null;
+            this.board[idy][idx].player = false;
         }
     }
 }
@@ -272,6 +319,27 @@ export const convertSudokuBoard = (board: string): Array<Array<number | null>> =
         return row.map((cell) => {
             if (cell === '.') {
                 return null;
+            }
+            return parseInt(cell);
+        });
+    });
+};
+
+export const convertSudokuSolution = (solution: string): Array<Array<number>> => {
+    if (solution.length !== 81) {
+        throw new Error('Board is not 81 characters long.');
+    }
+
+    const splitRows = solution.match(/.{1,9}/g);
+    if (!splitRows) {
+        throw new Error('Board could not be split into rows.');
+    }
+    const convertedBoard = splitRows.map((row) => row.split(''));
+
+    return convertedBoard.map((row) => {
+        return row.map((cell) => {
+            if (typeof cell !== 'string') {
+                throw new Error('Cell is not a string.');
             }
             return parseInt(cell);
         });

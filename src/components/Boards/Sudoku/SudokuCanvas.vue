@@ -45,7 +45,7 @@ export default defineComponent({
                     newBoard.drawGrid(canvas);
                     if (!newBoard.getPaused() && !this.loading) {
                         newBoard.drawBoard(canvas);
-                        newBoard.drawCursor(canvas);
+                        newBoard.drawOutline(canvas);
                     }
                 }
             }
@@ -76,8 +76,8 @@ export default defineComponent({
     <div class="relative">
         <canvas
             ref="sudoku"
-            :width="900"
-            :height="900"
+            :width="1000"
+            :height="1000"
             class="mb-6 w-full border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300 xl:mb-0"
             :class="{ 'blur-[3px]': board.getPaused() || loading }">
         </canvas>

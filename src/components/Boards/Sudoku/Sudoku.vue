@@ -5,7 +5,9 @@ import SudokuCanvas from './SudokuCanvas.vue';
 import SudokuPlay from './SudokuPlay.vue';
 import Difficulty from '../Common/Difficulty.vue';
 import SudokuStats from './SudokuStats.vue';
-import { getSudokuBoard, solveSudokuBoard, convertSudokuBoard, SudokuBoard } from './sudoku';
+import { useGameStore } from '@/GamesStore';
+import { getSudokuBoard, solveSudokuBoard, convertSudokuBoard, SudokuBoard, convertSudokuSolution } from './sudoku';
+import NewGameAlert from '@/components/Boards/Common/NewGameAlert.vue';
 import mitt from 'mitt';
 </script>
 
@@ -22,9 +24,11 @@ export default defineComponent({
                 { id: 3, name: 'Hard' }
             ],
             curDifficulty: 1,
+            nextDifficulty: 1,
             board: reactive(new SudokuBoard(gridSize)),
             loading: false,
-            intervalId: null as ReturnType<typeof setInterval> | null
+            intervalId: null as ReturnType<typeof setInterval> | null,
+            alert: false
         };
     },
     mounted() {
@@ -39,6 +43,12 @@ export default defineComponent({
             }
         });
     },
+    computed: {
+        progress() {
+            const store = useGameStore();
+            return store.getProgress;
+        }
+    },
     methods: {
         async fetchSudokuBoard() {
             this.loading = true;
@@ -48,33 +58,45 @@ export default defineComponent({
                     throw new Error('Difficulty does not exist.');
                 }
                 const puzzle = await getSudokuBoard(difficultyItem.name);
-                this.board.setBoard(convertSudokuBoard(puzzle));
-
                 const solution = await solveSudokuBoard(puzzle);
-                this.board.setSolution(convertSudokuBoard(solution) as number[][]);
+                this.board.setBoard(convertSudokuBoard(puzzle), convertSudokuSolution(solution));
             } catch (error) {
                 console.error('Error fetching Sudoku board:', error);
-                this.board.setBoard([]);
+                this.board.setBoard([], []);
             } finally {
                 this.loading = false;
             }
         },
+        setProgress(progress: boolean) {
+            const store = useGameStore();
+            store.setProgress(progress);
+        },
         async handleDifficultyChange(difficulty: number) {
-            this.curDifficulty = difficulty;
-            this.resetGame();
+            if (this.progress) {
+                this.alert = true;
+                this.nextDifficulty = difficulty;
+            } else {
+                this.curDifficulty = difficulty;
+                this.resetGame();
+            }
         },
         resetGame() {
             this.fetchSudokuBoard();
             this.board.resetState();
+            this.board.resetCursor();
+            this.setProgress(false);
         },
         handleKeyPress(event: KeyboardEvent) {
             if (event && event.code === 'Escape') this.board.togglePaused();
             if (event && event.code.startsWith('Digit') && event.key.length === 1) {
                 const num = parseInt(event.key);
                 if (num >= 1 && num <= 9) {
-                    this.board.setNumber(num);
+                    this.setProgress(this.board.setNumber(num));
                 }
             }
+        },
+        handleNumberChange(num: number) {
+            this.setProgress(this.board.setNumber(num));
         },
         handleVisibilityChange() {
             if (document.hidden || document.visibilityState === 'hidden') {
@@ -91,6 +113,17 @@ export default defineComponent({
             if (!this.board.getPaused() && !this.loading) {
                 this.board.incrementTimePassed();
             }
+        },
+        handleEraserClick() {
+            this.board.eraseNumber();
+        },
+        handleAlertClose() {
+            this.alert = false;
+        },
+        handleAlertNewGame() {
+            this.curDifficulty = this.nextDifficulty;
+            this.resetGame();
+            this.handleAlertClose();
         }
     },
     beforeUnmount() {
@@ -117,7 +150,11 @@ export default defineComponent({
                 @set-paused="handlePauseChange"
                 @set-cursor="handleCursorChange"
                 :loading="loading" />
-            <SudokuPlay @newgame-clicked="resetGame" />
+            <SudokuPlay
+                @newgame-clicked="resetGame"
+                @num-clicked="handleNumberChange"
+                @erase-clicked="handleEraserClick" />
         </div>
+        <NewGameAlert :open="alert" :title="'Start New Game'" @close="handleAlertClose" @exit="handleAlertNewGame" />
     </div>
 </template>

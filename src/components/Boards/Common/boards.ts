@@ -1,12 +1,15 @@
 export interface Board {
-    board: Array<Array<number | string | null>>;
+    board: Array<Array<number | string | object | null>>;
     gridSize: number;
 
     drawGrid(canvas: HTMLCanvasElement): void;
     drawBoard(canvas: HTMLCanvasElement): void;
-    drawCursor(canvas: HTMLCanvasElement): void;
+    drawOutline(canvas: HTMLCanvasElement): void;
     resetState(): void;
-    setBoard(board: Array<Array<number | string | null>>): void;
+    setBoard(
+        board: Array<Array<number | string | object | null>>,
+        solution: Array<Array<number | string | object>>
+    ): void;
 }
 
 export class Cursor {
