@@ -1,9 +1,11 @@
 import type { Board } from '../Common/boards';
+import { Cursor } from '../Common/boards';
 
 export class SudokuBoard implements Board {
     gridSize: number;
     board: Array<Array<number | null>> = [];
     solution: Array<Array<number>> = [];
+    cursor: Cursor | null = null;
 
     // Game state
     paused: boolean = true;
@@ -15,18 +17,31 @@ export class SudokuBoard implements Board {
     constructor(gridSize: number) {
         this.gridSize = gridSize;
     }
+    calculateSizes(canvasSize: number): {
+        squareSize: number;
+        paddingT: number;
+        paddingB: number;
+        paddingL: number;
+        paddingR: number;
+    } {
+        const squareSize = Math.floor(canvasSize / (this.gridSize + 0.5));
+        const padding = canvasSize - this.gridSize * squareSize;
+
+        const paddingL = padding / 2;
+        const paddingT = padding / 2;
+        const paddingR = canvasSize - this.gridSize * squareSize - paddingL;
+        const paddingB = canvasSize - this.gridSize * squareSize - paddingT;
+
+        return { squareSize, paddingT, paddingB, paddingL, paddingR };
+    }
     drawBoard(canvas: HTMLCanvasElement): void {
         const ctx = canvas.getContext('2d');
         const size = canvas.width;
         if (!ctx) return;
 
-        const squareSize = Math.floor(size / (this.gridSize + 0.5));
-        const padding = size - this.gridSize * squareSize;
+        const sizes = this.calculateSizes(size);
 
-        const paddingL = padding / 2;
-        const paddingT = padding / 2;
-
-        ctx.font = `${squareSize}px sans-serif`;
+        ctx.font = `${sizes.squareSize}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
@@ -35,9 +50,14 @@ export class SudokuBoard implements Board {
                 const value = this.board[row][col];
                 if (!value) continue;
 
-                const x = paddingL + col * squareSize + squareSize / 2;
-                const y = paddingT + row * squareSize + squareSize / 2;
+                const x = sizes.paddingL + col * sizes.squareSize + sizes.squareSize / 2;
+                const y = sizes.paddingT + row * sizes.squareSize + sizes.squareSize / 2;
 
+                if (value !== this.solution[row][col]) {
+                    ctx.fillStyle = 'red';
+                } else {
+                    ctx.fillStyle = 'black';
+                }
                 ctx.fillText(value.toString(), x, y + 6);
             }
         }
@@ -47,34 +67,65 @@ export class SudokuBoard implements Board {
         const size = canvas.width;
         if (!ctx) return;
 
-        const squareSize = Math.floor(size / (this.gridSize + 0.5));
-        const padding = size - this.gridSize * squareSize;
-
-        const paddingL = padding / 2;
-        const paddingT = padding / 2;
-        const paddingR = size - this.gridSize * squareSize - paddingL;
-        const paddingB = size - this.gridSize * squareSize - paddingT;
+        const sizes = this.calculateSizes(size);
 
         for (let i = 0; i < this.gridSize + 1; i++) {
             ctx.beginPath();
             ctx.strokeStyle = i % 3 === 0 ? 'black' : 'gray';
             ctx.lineWidth = 1;
 
-            const x = paddingL + i * squareSize;
-            const y = paddingT + i * squareSize;
+            const x = sizes.paddingL + i * sizes.squareSize;
+            const y = sizes.paddingT + i * sizes.squareSize;
 
             // Draw vertical lines
-            ctx.moveTo(x, paddingT);
-            ctx.lineTo(x, size - paddingB);
+            ctx.moveTo(x, sizes.paddingT);
+            ctx.lineTo(x, size - sizes.paddingB);
 
             // Draw horizontal lines
-            ctx.moveTo(paddingL, y);
-            ctx.lineTo(size - paddingR, y);
+            ctx.moveTo(sizes.paddingL, y);
+            ctx.lineTo(size - sizes.paddingR, y);
             ctx.stroke();
         }
     }
+    drawCursor(canvas: HTMLCanvasElement): void {
+        const ctx = canvas.getContext('2d');
+        const size = canvas.width;
+        if (!ctx || !this.cursor) return;
+
+        const sizes = this.calculateSizes(size);
+        const idx = this.cursor.getX();
+        const idy = this.cursor.getY();
+        const x = sizes.paddingL + idx * sizes.squareSize;
+        const y = sizes.paddingT + idy * sizes.squareSize;
+
+        ctx.fillStyle = 'rgba(37, 99, 235, 0.4)';
+        ctx.fillRect(x, y, sizes.squareSize, sizes.squareSize);
+
+        ctx.fillStyle = 'rgba(107, 114, 128, 0.3)';
+        for (let i = 0; i < this.gridSize; i++) {
+            const x_temp = sizes.paddingL + i * sizes.squareSize;
+            const y_temp = sizes.paddingT + i * sizes.squareSize;
+            if (y_temp !== y) {
+                ctx.fillRect(x, y_temp, sizes.squareSize, sizes.squareSize);
+            }
+            if (x_temp !== x) {
+                ctx.fillRect(x_temp, y, sizes.squareSize, sizes.squareSize);
+            }
+        }
+
+        const startRow = idy - (idy % 3);
+        const startCol = idx - (idx % 3);
+        ctx.fillStyle = 'rgba(107, 114, 128, 0.3)';
+        for (let row = startRow; row < startRow + 3; row++) {
+            for (let col = startCol; col < startCol + 3; col++) {
+                if (row === idy || col === idx) continue;
+                const x_temp = sizes.paddingL + col * sizes.squareSize;
+                const y_temp = sizes.paddingT + row * sizes.squareSize;
+                ctx.fillRect(x_temp, y_temp, sizes.squareSize, sizes.squareSize);
+            }
+        }
+    }
     setBoard(board: Array<Array<number | null>>): void {
-        console.log(board);
         this.board = board;
     }
     isBoardValid(): boolean {
@@ -82,7 +133,6 @@ export class SudokuBoard implements Board {
     }
     setSolution(solution: Array<Array<number>>): void {
         this.solution = solution;
-        console.log(this.solution);
     }
     resetState(): void {
         this.paused = false;
@@ -111,6 +161,40 @@ export class SudokuBoard implements Board {
     }
     getScore(): number {
         return this.score;
+    }
+    setCursor(input: { cursorX: number; cursorY: number; canvasSize: number }): void {
+        const sizes = this.calculateSizes(input.canvasSize);
+
+        if (
+            input.cursorX < sizes.paddingL ||
+            input.cursorX > input.canvasSize - sizes.paddingR ||
+            input.cursorY < sizes.paddingT ||
+            input.cursorY > input.canvasSize - sizes.paddingB
+        ) {
+            return;
+        }
+
+        const idx = Math.floor((input.cursorX - sizes.paddingL) / sizes.squareSize);
+        const idy = Math.floor((input.cursorY - sizes.paddingT) / sizes.squareSize);
+
+        if (!this.cursor) {
+            this.cursor = new Cursor(idx, idy);
+        } else {
+            this.cursor.set(idx, idy);
+        }
+    }
+    setNumber(num: number): void {
+        if (!this.cursor) return;
+
+        const idx = this.cursor.getX();
+        const idy = this.cursor.getY();
+
+        if (this.board[idy][idx] === null) {
+            this.board[idy][idx] = num;
+            if (this.solution[idy][idx] !== num) {
+                this.mistakes++;
+            }
+        }
     }
 }
 
@@ -166,7 +250,6 @@ export const solveSudokuBoard = async (board: string): Promise<string> => {
         if (typeof data.solution !== 'string') {
             throw new Error('Solution is not a string.');
         }
-        console.log(data);
         return data.solution;
     } catch (error) {
         console.error(error);

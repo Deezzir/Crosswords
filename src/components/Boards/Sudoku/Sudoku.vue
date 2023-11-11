@@ -30,7 +30,7 @@ export default defineComponent({
     mounted() {
         this.fetchSudokuBoard();
         document.addEventListener('visibilitychange', this.handleVisibilityChange);
-        document.addEventListener('keydown', this.handleESC);
+        document.addEventListener('keydown', this.handleKeyPress);
 
         this.intervalId = setInterval(this.incrementTimePassed, 1000);
         emitter.on('destroy', () => {
@@ -67,13 +67,22 @@ export default defineComponent({
             this.fetchSudokuBoard();
             this.board.resetState();
         },
-        handleESC(event: KeyboardEvent) {
+        handleKeyPress(event: KeyboardEvent) {
             if (event && event.code === 'Escape') this.board.togglePaused();
+            if (event && event.code.startsWith('Digit') && event.key.length === 1) {
+                const num = parseInt(event.key);
+                if (num >= 1 && num <= 9) {
+                    this.board.setNumber(num);
+                }
+            }
         },
         handleVisibilityChange() {
             if (document.hidden || document.visibilityState === 'hidden') {
                 this.board.setPaused(true);
             }
+        },
+        handleCursorChange(input: { cursorX: number; cursorY: number; canvasSize: number }) {
+            this.board.setCursor(input);
         },
         handlePauseChange(paused: boolean) {
             this.board.setPaused(paused);
@@ -86,7 +95,7 @@ export default defineComponent({
     },
     beforeUnmount() {
         document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-        document.removeEventListener('keydown', this.handleESC);
+        document.removeEventListener('keydown', this.handleKeyPress);
         emitter.emit('destroy');
         emitter.off('destroy');
     }
@@ -102,8 +111,12 @@ export default defineComponent({
                 @set-difficulty="handleDifficultyChange" />
             <SudokuStats :board="board" @set-paused="handlePauseChange" />
         </div>
-        <div class="grid grid-cols-1 items-center justify-items-center gap-x-16 lg:grid-cols-2">
-            <SudokuCanvas :board="board" @set-paused="handlePauseChange" :loading="loading" />
+        <div class="grid grid-cols-1 items-center justify-items-center gap-x-16 xl:grid-cols-2">
+            <SudokuCanvas
+                :board="board"
+                @set-paused="handlePauseChange"
+                @set-cursor="handleCursorChange"
+                :loading="loading" />
             <SudokuPlay @newgame-clicked="resetGame" />
         </div>
     </div>

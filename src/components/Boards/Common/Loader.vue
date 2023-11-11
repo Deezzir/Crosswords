@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div
-        class="loader -ml-7 -mt-7 h-14 w-14 rounded-full border-[6px] border-solid border-gray-500 border-t-blue-600"></div>
+        class="loader -ml-10 -mt-10 h-20 w-20 rounded-full border-[6px] border-solid border-blue-600 border-t-gray-500"></div>
 </template>
 
 <style>
