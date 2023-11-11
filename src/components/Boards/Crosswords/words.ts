@@ -1,4 +1,4 @@
-const words = [
+export const words = [
     'redemption',
     'school',
     'forrest',
@@ -251,24 +251,3 @@ const words = [
     'zebra',
     'zeppelin'
 ];
-
-type Direction = 'horizontal' | 'vertical';
-
-class Word {
-    text: string;
-    row: number;
-    col: number;
-    direction: Direction;
-
-    constructor(text: string, row: number, col: number, direction: Direction) {
-        this.text = text;
-        this.row = row;
-        this.col = col;
-        this.direction = direction;
-    }
-}
-
-export default {
-    words: words,
-    Word: Word
-};
