@@ -58,6 +58,9 @@ export class CrosswordsBoard implements Board {
         if (!ctx) return;
         console.log(size);
     }
+    drawOutline(canvas: HTMLCanvasElement): void {
+        console.log(canvas);
+    }
     resetState(): void {}
     setBoard(board: Array<Array<string | null>>): void {
         this.board = board;
