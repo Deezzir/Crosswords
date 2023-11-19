@@ -63,12 +63,12 @@ export default defineComponent({
                 <span class="ml-2 hidden md:block">{{ button.name }}</span>
             </button>
         </div>
-        <div class="grid grid-cols-9 rounded-lg bg-slate-300 xl:grid-cols-3 xl:gap-3 xl:rounded-none xl:bg-transparent">
+        <div class="grid grid-cols-9 rounded-lg bg-slate-300 lg:grid-cols-3 lg:gap-3 lg:rounded-none lg:bg-transparent">
             <button
                 v-for="n in 9"
                 :key="n"
                 @click="numBtnClicked(n)"
-                class="rounded-md p-6 text-4xl text-blue-500 transition-colors duration-300 hover:bg-gray-300 dark:text-blue-600 dark:hover:bg-gray-400 xl:bg-slate-200 xl:text-5xl xl:dark:bg-slate-300">
+                class="rounded-md p-6 text-4xl text-blue-500 transition-colors duration-300 hover:bg-gray-300 dark:text-blue-600 dark:hover:bg-gray-400 lg:bg-slate-200 lg:text-5xl lg:dark:bg-slate-300">
                 {{ n }}
             </button>
         </div>
