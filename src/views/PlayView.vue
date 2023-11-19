@@ -90,7 +90,7 @@ export default defineComponent({
                     </button>
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3" v-else>
+            <div class="grid grid-cols-2 items-center gap-4" v-else>
                 <button class="flex justify-self-start" @click="handleGameClose"><BackIcon /></button>
                 <component :is="currentGame(curGame)" />
             </div>

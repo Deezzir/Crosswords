@@ -139,7 +139,7 @@ export default defineComponent({
     <div class="flex justify-self-end lg:hidden">
         <button
             @click="resetGame"
-            class="focus:shadow-outline transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 px-4 py-2 text-lg font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none">
+            class="focus:shadow-outline transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 px-4 py-3 text-xl font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none">
             New Game
         </button>
     </div>
@@ -151,7 +151,7 @@ export default defineComponent({
                 @set-difficulty="handleDifficultyChange" />
             <SudokuStats :board="board" @set-paused="handlePauseChange" />
         </div>
-        <div class="grid grid-cols-1 items-center justify-items-center gap-x-16 xl:grid-cols-2">
+        <div class="grid grid-cols-1 items-center justify-items-center gap-x-16 lg:grid-cols-2">
             <SudokuCanvas
                 :board="board"
                 @set-paused="handlePauseChange"
