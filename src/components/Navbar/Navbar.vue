@@ -1,22 +1,14 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue';
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
 
 import NavLogo from './NavLogo.vue';
 import NavItem from './NavItem.vue';
 import ThemeMode from './ThemeMode/ThemeMode.vue';
-import NavList from './NavList.vue';
 
 import type { Navigation } from './navbar';
-
-const menuButton = ref<typeof MenuButton | null>(null);
-const toggleMenu = () => {
-    if (menuButton.value) {
-        menuButton.value.$el.click();
-    }
-};
 </script>
 
 <script lang="ts">
@@ -67,12 +59,18 @@ export default defineComponent({
             <NavLogo />
 
             <div class="flex items-center">
-                <MenuButton ref="menuButton" @click="overflow(!open)" class="rounded-md p-2 text-white sm:hidden">
+                <MenuButton class="rounded-md p-2 text-white sm:hidden">
                     <Bars3Icon v-if="!open" class="block h-10 w-10" />
                     <XMarkIcon v-else class="block h-10 w-10" />
                 </MenuButton>
 
-                <NavList :navs="navigations" />
+                <div class="hidden sm:block">
+                    <ul class="flex space-x-10 text-2xl leading-6 text-white">
+                        <li v-for="nav in navigations" :key="nav.id">
+                            <NavItem :nav="nav" />
+                        </li>
+                    </ul>
+                </div>
                 <ThemeMode />
             </div>
         </div>
@@ -87,13 +85,13 @@ export default defineComponent({
             <MenuItems
                 class="absolute top-[80px] flex w-full flex-col items-center space-y-5 bg-slate-900/[.85] px-[10vw] py-[2vh] text-2xl text-white dark:border-b dark:border-slate-50/[0.05] dark:bg-slate-800/90 sm:hidden">
                 <MenuItem
+                    v-slot="{ close }"
+                    as="div"
                     v-for="nav in navigations"
                     :key="nav.id"
-                    @click="toggleMenu(), overflow(false)"
-                    class="inline-flex h-[45px] w-full items-center justify-center text-center">
-                    <NavItem :nav="nav" is-dropdown />
+                    class="inline-flex h-[45px] w-full items-center justify-center text-center focus:outline-none">
+                    <NavItem @click="close" :nav="nav" is-dropdown />
                 </MenuItem>
-
                 <div class="mt-[2vh] flex border-t border-slate-500/50 pt-[1vh]">
                     <ThemeMode is-dropdown />
                 </div>

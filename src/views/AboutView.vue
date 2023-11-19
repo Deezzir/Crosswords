@@ -5,7 +5,7 @@ const gamesStore = useGameStore();
 </script>
 
 <template>
-    <div class="mx-auto mb-16 mt-10 px-[6vw] text-gray-700 dark:text-white sm:px-[10vw]">
+    <div class="mx-auto mt-10 px-[6vw] pb-20 text-gray-700 dark:text-white sm:px-[10vw] lg:pb-12">
         <h1 class="text-4xl font-bold">The Joy of Classic Board Games Reimagined</h1>
         <p class="mt-5 text-2xl sm:text-xl">
             In the digital hustle, take a breather and indulge in the timeless world of NoxuBoards. It is a one-stop

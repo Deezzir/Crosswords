@@ -14,9 +14,6 @@ const components = [
 <script lang="ts">
 export default defineComponent({
     methods: {
-        newGameBtnClicked() {
-            this.$emit('newgame-clicked');
-        },
         undoBtnClicked() {
             this.$emit('undo-clicked');
         },
@@ -55,7 +52,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="mt-12 grid h-full w-full grid-cols-1 content-between gap-3 xl:mt-0 xl:gap-8">
+    <div class="grid grid-cols-1 gap-8">
         <div class="grid grid-cols-4 justify-evenly gap-8">
             <button
                 v-for="button in components"
@@ -73,13 +70,6 @@ export default defineComponent({
                 @click="numBtnClicked(n)"
                 class="rounded-md p-6 text-4xl text-blue-500 transition-colors duration-300 hover:bg-gray-300 dark:text-blue-600 dark:hover:bg-gray-400 xl:bg-slate-200 xl:text-5xl xl:dark:bg-slate-300">
                 {{ n }}
-            </button>
-        </div>
-        <div class="flex">
-            <button
-                @click="newGameBtnClicked"
-                class="focus:shadow-outline grow transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-4xl font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none xl:p-4">
-                New Game
             </button>
         </div>
     </div>

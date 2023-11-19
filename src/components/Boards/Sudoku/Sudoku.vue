@@ -7,7 +7,7 @@ import Difficulty from '../Common/Difficulty.vue';
 import SudokuStats from './SudokuStats.vue';
 import { useGameStore } from '@/GamesStore';
 import { getSudokuBoard, solveSudokuBoard, convertSudokuBoard, SudokuBoard, convertSudokuSolution } from './sudoku';
-import NewGameAlert from '@/components/Boards/Common/NewGameAlert.vue';
+import NewGameAlert from '@/components/Boards/Common/Alert.vue';
 import mitt from 'mitt';
 </script>
 
@@ -136,7 +136,14 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="grid grid-flow-row gap-2" style="grid-template-rows: auto 1fr">
+    <div class="flex justify-self-end lg:hidden">
+        <button
+            @click="resetGame"
+            class="focus:shadow-outline transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 px-4 py-2 text-lg font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none">
+            New Game
+        </button>
+    </div>
+    <div class="col-span-2 grid grid-flow-row gap-2" style="grid-template-rows: auto 1fr">
         <div class="grid items-center gap-10 sm:grid-cols-2" style="grid-template-columns: auto 1fr">
             <Difficulty
                 :difficulties="difficulties"
@@ -150,10 +157,16 @@ export default defineComponent({
                 @set-paused="handlePauseChange"
                 @set-cursor="handleCursorChange"
                 :loading="loading" />
-            <SudokuPlay
-                @newgame-clicked="resetGame"
-                @num-clicked="handleNumberChange"
-                @erase-clicked="handleEraserClick" />
+            <div class="mt-6 grid h-full w-full grid-cols-1 content-between xl:mt-0">
+                <SudokuPlay @num-clicked="handleNumberChange" @erase-clicked="handleEraserClick" />
+                <div class="hidden lg:flex">
+                    <button
+                        @click="resetGame"
+                        class="focus:shadow-outline grow transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-4xl font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none xl:p-4">
+                        New Game
+                    </button>
+                </div>
+            </div>
         </div>
         <NewGameAlert :open="alert" :title="'Start New Game'" @close="handleAlertClose" @exit="handleAlertNewGame" />
     </div>
