@@ -78,12 +78,12 @@ export default defineComponent({
             ref="sudoku"
             :width="1000"
             :height="1000"
-            class="mb-6 w-full border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300 xl:mb-0"
+            class="w-full border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300 lg:mb-0"
             :class="{ 'blur-[3px]': board.getPaused() || loading }">
         </canvas>
         <button
             v-if="board.getPaused() && !loading"
-            class="absolute left-[50%] top-[50%] -ml-12 -mt-12 sm:-ml-10 sm:-mt-10"
+            class="absolute left-[50%] top-[50%] -ml-10 -mt-10"
             @click="setPaused(!board.getPaused())">
             <PlayIcon class="text-blue-600" style="width: 5rem; height: 5rem" />
         </button>

@@ -52,8 +52,8 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="grid grid-cols-1 gap-8 xl:gap-6">
-        <div class="grid grid-cols-4 justify-evenly gap-8">
+    <div class="grid grid-cols-1 gap-8">
+        <div class="grid grid-cols-4 justify-evenly gap-8 xl:gap-6">
             <button
                 v-for="button in components"
                 :key="button.name"
