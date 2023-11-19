@@ -39,14 +39,13 @@ export default defineComponent({
                 class="rounded px-4 py-1 text-gray-600 hover:bg-gray-200 dark:text-gray-500 dark:hover:bg-gray-700"
                 v-for="difficulty in difficulties"
                 :key="difficulty.id"
-                @keydown.space.prevent
                 :class="{ 'bg-gray-200 dark:bg-gray-700': isCurDifficulty(difficulty.id) }"
                 @click="setDifficulty(difficulty.id)">
                 {{ difficulty.name }}
             </button>
         </div>
         <Menu as="div" class="inline-flex sm:hidden">
-            <MenuButton @keydown.space.prevent class="flex flex-row items-center justify-center gap-2 text-2xl">
+            <MenuButton class="flex flex-row items-center justify-center gap-2 text-2xl">
                 <span>{{ getCurDifficultyName() }}</span>
                 <ChevronDownIcon class="h-6 w-6" />
             </MenuButton>
@@ -63,8 +62,7 @@ export default defineComponent({
                             as="button"
                             v-for="difficulty in difficulties"
                             :key="difficulty.id"
-                            @keydown.space.prevent
-                            class="text-l w-full rounded-lg px-5 py-3 text-left text-gray-400"
+                            class="text-l w-full rounded-lg px-5 py-3 text-left text-gray-400 focus:outline-none"
                             @click="setDifficulty(difficulty.id)"
                             :class="{ 'bg-gray-700': isCurDifficulty(difficulty.id) }">
                             {{ difficulty.name }}

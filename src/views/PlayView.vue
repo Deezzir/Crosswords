@@ -5,7 +5,7 @@ import Crosswords from '@/components/Boards/Crosswords/Crosswords.vue';
 import Sudoku from '@/components/Boards/Sudoku/Sudoku.vue';
 import Error from '@/components/Error/Error.vue';
 import BackIcon from '@/components/Icons/BackIcon.vue';
-import NewGameAlert from '@/components/Boards/Common/NewGameAlert.vue';
+import NewGameAlert from '@/components/Boards/Common/Alert.vue';
 </script>
 
 <script lang="ts">
@@ -68,7 +68,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="mx-auto mt-2 h-full px-[5vw] sm:px-[10vw]">
+    <div class="mx-auto mt-3 h-full px-[5vw] pb-20 sm:px-[10vw] lg:pb-12">
         <Transition
             mode="out-in"
             enter-active-class="transition opacity 0.3s ease"
@@ -90,8 +90,8 @@ export default defineComponent({
                     </button>
                 </div>
             </div>
-            <div v-else>
-                <button class="mb-4 justify-self-end" @click="handleGameClose"><BackIcon /></button>
+            <div class="grid grid-cols-2 gap-3" v-else>
+                <button class="flex justify-self-start" @click="handleGameClose"><BackIcon /></button>
                 <component :is="currentGame(curGame)" />
             </div>
         </Transition>
