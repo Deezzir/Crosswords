@@ -68,7 +68,7 @@ export default defineComponent({
                 v-for="n in 9"
                 :key="n"
                 @click="numBtnClicked(n)"
-                class="rounded-md p-6 text-4xl text-blue-500 transition-colors duration-300 hover:bg-gray-300 dark:text-blue-600 dark:hover:bg-gray-400 lg:bg-slate-200 lg:dark:bg-slate-300 xl:text-5xl">
+                class="rounded-md p-6 text-4xl text-blue-500 transition-colors duration-300 hover:bg-gray-300 dark:text-blue-600 dark:hover:bg-gray-400 lg:bg-slate-200 lg:dark:bg-slate-300 xl:p-5 xl:text-5xl">
                 {{ n }}
             </button>
         </div>
