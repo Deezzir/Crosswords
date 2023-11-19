@@ -157,12 +157,12 @@ export default defineComponent({
                 @set-paused="handlePauseChange"
                 @set-cursor="handleCursorChange"
                 :loading="loading" />
-            <div class="mt-6 grid h-full w-full grid-cols-1 content-between xl:mt-0">
+            <div class="mt-6 grid h-full w-full grid-cols-1 content-between lg:mt-0">
                 <SudokuPlay @num-clicked="handleNumberChange" @erase-clicked="handleEraserClick" />
                 <div class="hidden lg:flex">
                     <button
                         @click="resetGame"
-                        class="focus:shadow-outline grow transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-4xl font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none xl:p-4">
+                        class="focus:shadow-outline grow transform rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-4xl font-bold text-white transition duration-300 ease-in-out hover:scale-105 focus:outline-none lg:p-4">
                         New Game
                     </button>
                 </div>
