@@ -83,7 +83,7 @@ export default defineComponent({
         </canvas>
         <button
             v-if="board.getPaused() && !loading"
-            class="absolute left-[50%] top-[50%] -ml-10 -mt-10"
+            class="absolute left-[50%] top-[50%] -ml-12 -mt-12 sm:-ml-10 sm:-mt-10"
             @click="setPaused(!board.getPaused())">
             <PlayIcon class="text-blue-600" style="width: 5rem; height: 5rem" />
         </button>
