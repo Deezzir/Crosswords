@@ -1,10 +1,21 @@
+export type canvasSizes = {
+    width: number;
+    height: number;
+    squareSize: number;
+    paddingT: number;
+    paddingB: number;
+    paddingL: number;
+    paddingR: number;
+};
+
 export interface Board {
     board: Array<Array<number | string | object | null>>;
     gridSize: number;
 
-    drawGrid(canvas: HTMLCanvasElement): void;
-    drawBoard(canvas: HTMLCanvasElement): void;
-    drawOutline(canvas: HTMLCanvasElement): void;
+    draw(canvas: HTMLCanvasElement): void;
+    drawGrid(ctx: CanvasRenderingContext2D, sizes: canvasSizes): void;
+    drawBoard(ctx: CanvasRenderingContext2D, sizes: canvasSizes): void;
+    drawOutline(ctx: CanvasRenderingContext2D, sizes: canvasSizes): void;
     resetState(): void;
     setBoard(
         board: Array<Array<number | string | object | null>>,

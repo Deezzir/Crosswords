@@ -11,23 +11,21 @@ export default defineComponent({
         board: {
             type: SudokuBoard,
             required: true
-        },
-        loading: {
-            type: Boolean,
-            required: true
         }
     },
     methods: {
         setPaused(paused: boolean) {
             this.$emit('set-paused', paused);
         },
-        setCursorPosition(canvasRect: DOMRect, canvasSize: number, event: MouseEvent) {
-            const scaleX = canvasSize / canvasRect.width;
-            const scaleY = canvasSize / canvasRect.height;
+        setCursorPosition(canvasRect: DOMRect, canvas: HTMLCanvasElement, event: MouseEvent) {
+            const sizes = this.board.calculateSizes(canvas);
+
+            const scaleX = sizes.width / canvasRect.width;
+            const scaleY = sizes.width / canvasRect.height;
             const cursorX = (event.clientX - canvasRect.left) * scaleX;
             const cursorY = (event.clientY - canvasRect.top) * scaleY;
 
-            this.$emit('set-cursor', { cursorX: cursorX, cursorY: cursorY, canvasSize: canvasSize });
+            this.$emit('set-cursor', { cursorX: cursorX, cursorY: cursorY }, sizes);
         }
     },
     data() {
@@ -41,13 +39,7 @@ export default defineComponent({
             handler(newBoard) {
                 const canvas = this.$refs.sudoku as HTMLCanvasElement;
                 canvas.height = canvas.width;
-                if (canvas) {
-                    newBoard.drawGrid(canvas);
-                    if (!newBoard.getPaused() && !this.loading) {
-                        newBoard.drawBoard(canvas);
-                        newBoard.drawOutline(canvas);
-                    }
-                }
+                if (canvas) newBoard.draw(canvas);
             }
         }
     },
@@ -57,13 +49,10 @@ export default defineComponent({
 
         this.clickHandler = (e) => {
             const canvasRect = canvas.getBoundingClientRect();
-            this.setCursorPosition(canvasRect, canvas.height, e);
+            this.setCursorPosition(canvasRect, canvas, e);
         };
         canvas.addEventListener('click', this.clickHandler);
-        if (canvas) {
-            this.board.drawGrid(canvas);
-            if (this.board.isBoardValid()) this.board.drawBoard(canvas);
-        }
+        if (canvas) this.board.draw(canvas);
     },
     beforeUnmount() {
         const canvas = this.$refs.sudoku as HTMLCanvasElement;
@@ -79,15 +68,15 @@ export default defineComponent({
             :width="1000"
             :height="1000"
             class="w-full border-8 border-[#174dbe] bg-slate-100 dark:bg-slate-300 lg:mb-0"
-            :class="{ 'blur-[3px]': board.getPaused() || loading }">
+            :class="{ 'blur-[3px]': board.isPaused() || !board.isLoaded() }">
         </canvas>
         <button
-            v-if="board.getPaused() && !loading"
+            v-if="board.isPaused() && board.isLoaded()"
             class="absolute left-[50%] top-[50%] -ml-10 -mt-10"
-            @click="setPaused(!board.getPaused())">
+            @click="setPaused(!board.isPaused())">
             <PlayIcon class="text-blue-600" style="width: 5rem; height: 5rem" />
         </button>
-        <div v-if="loading" class="absolute left-[50%] top-[50%]">
+        <div v-if="!board.isLoaded()" class="absolute left-[50%] top-[50%]">
             <Loader />
         </div>
     </div>

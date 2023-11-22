@@ -95,6 +95,6 @@ export default defineComponent({
                 <component :is="currentGame(curGame)" />
             </div>
         </Transition>
-        <NewGameAlert :open="alert" :title="'Exit Game'" @close="handleAlertClose" @exit="handleAlertExit" />
+        <NewGameAlert :open="alert" :title="'Exit Game'" @close="handleAlertClose" @yes="handleAlertExit" />
     </div>
 </template>

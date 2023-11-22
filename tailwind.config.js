@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export const darkMode = 'class';
 export const mode = 'jit';
+export const future = { hoverOnlyWhenSupported: true };
 export const content = ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'];
 export const theme = {
     screens: {

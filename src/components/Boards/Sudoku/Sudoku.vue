@@ -6,6 +6,7 @@ import SudokuPlay from './SudokuPlay.vue';
 import Difficulty from '../Common/Difficulty.vue';
 import SudokuStats from './SudokuStats.vue';
 import { useGameStore } from '@/GamesStore';
+import { type canvasSizes } from '../Common/boards';
 import { getSudokuBoard, solveSudokuBoard, convertSudokuBoard, SudokuBoard, convertSudokuSolution } from './sudoku';
 import NewGameAlert from '@/components/Boards/Common/Alert.vue';
 import mitt from 'mitt';
@@ -26,7 +27,6 @@ export default defineComponent({
             curDifficulty: 1,
             nextDifficulty: 1,
             board: reactive(new SudokuBoard(gridSize)),
-            loading: false,
             intervalId: null as ReturnType<typeof setInterval> | null,
             alert: false
         };
@@ -51,7 +51,7 @@ export default defineComponent({
     },
     methods: {
         async fetchSudokuBoard() {
-            this.loading = true;
+            this.board.setLoaded(false);
             try {
                 const difficultyItem = this.difficulties.find((diff) => diff.id === this.curDifficulty);
                 if (!difficultyItem) {
@@ -64,7 +64,7 @@ export default defineComponent({
                 console.error('Error fetching Sudoku board:', error);
                 this.board.setBoard([], []);
             } finally {
-                this.loading = false;
+                this.board.setLoaded(true);
             }
         },
         setProgress(progress: boolean) {
@@ -91,7 +91,7 @@ export default defineComponent({
             if (event && event.code.startsWith('Digit') && event.key.length === 1) {
                 const num = parseInt(event.key);
                 if (num >= 1 && num <= 9) {
-                    this.setProgress(this.board.setNumber(num));
+                    this.handleNumberChange(num);
                 }
             }
         },
@@ -103,16 +103,11 @@ export default defineComponent({
                 this.board.setPaused(true);
             }
         },
-        handleCursorChange(input: { cursorX: number; cursorY: number; canvasSize: number }) {
-            this.board.setCursor(input);
+        handleCursorChange(input: { cursorX: number; cursorY: number }, sizes: canvasSizes) {
+            this.board.setCursor(input, sizes);
         },
         handlePauseChange(paused: boolean) {
             this.board.setPaused(paused);
-        },
-        incrementTimePassed() {
-            if (!this.board.getPaused() && !this.loading) {
-                this.board.incrementTimePassed();
-            }
         },
         handleEraserClick() {
             this.board.eraseNumber();
@@ -124,6 +119,11 @@ export default defineComponent({
             this.curDifficulty = this.nextDifficulty;
             this.resetGame();
             this.handleAlertClose();
+        },
+        incrementTimePassed() {
+            if (!this.board.isPaused() && this.board.isLoaded()) {
+                this.board.incrementTimePassed();
+            }
         }
     },
     beforeUnmount() {
@@ -152,11 +152,7 @@ export default defineComponent({
             <SudokuStats :board="board" @set-paused="handlePauseChange" />
         </div>
         <div class="grid grid-cols-1 items-center justify-items-center gap-x-16 lg:grid-cols-2">
-            <SudokuCanvas
-                :board="board"
-                @set-paused="handlePauseChange"
-                @set-cursor="handleCursorChange"
-                :loading="loading" />
+            <SudokuCanvas :board="board" @set-paused="handlePauseChange" @set-cursor="handleCursorChange" />
             <div class="mt-16 grid h-full w-full grid-cols-1 content-between lg:mt-0">
                 <SudokuPlay @num-clicked="handleNumberChange" @erase-clicked="handleEraserClick" />
                 <div class="hidden lg:flex">
@@ -168,6 +164,7 @@ export default defineComponent({
                 </div>
             </div>
         </div>
-        <NewGameAlert :open="alert" :title="'Start New Game'" @close="handleAlertClose" @exit="handleAlertNewGame" />
+        <NewGameAlert :open="alert" :title="'Start new game'" @close="handleAlertClose" @yes="handleAlertNewGame">
+        </NewGameAlert>
     </div>
 </template>
