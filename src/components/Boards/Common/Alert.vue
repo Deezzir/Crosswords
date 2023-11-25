@@ -20,8 +20,8 @@ export default defineComponent({
         close() {
             this.$emit('close');
         },
-        exit() {
-            this.$emit('exit');
+        yes() {
+            this.$emit('yes');
         }
     }
 });
@@ -69,7 +69,7 @@ export default defineComponent({
                                 <button
                                     type="button"
                                     class="inline-flex w-full justify-center rounded-md bg-blue-600 p-3 text-xl font-semibold text-white shadow-sm hover:bg-blue-500 sm:w-auto"
-                                    @click="exit">
+                                    @click="yes">
                                     Ok
                                 </button>
                                 <button

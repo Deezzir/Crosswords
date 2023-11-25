@@ -44,9 +44,9 @@ export default defineComponent({
             <p>{{ timePassedFormatted }}</p>
         </div>
         <button
-            @click="setPaused(!board.getPaused())"
+            @click="setPaused(!board.isPaused())"
             class="text-gray-600 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-400">
-            <div v-if="board.getPaused()">
+            <div v-if="board.isPaused()">
                 <PlayIcon />
             </div>
             <div v-else>

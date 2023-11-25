@@ -1,4 +1,4 @@
-import type { Board } from '../Common/boards';
+import type { Board, canvasSizes } from '../Common/boards';
 import { Cursor } from '../Common/boards';
 
 export class SudokuBoard implements Board {
@@ -8,6 +8,7 @@ export class SudokuBoard implements Board {
 
     // Game state
     paused: boolean = true;
+    loaded: boolean = false;
     score: number = 0;
     mistakes: number = 0;
     time: number = 0;
@@ -15,30 +16,36 @@ export class SudokuBoard implements Board {
     constructor(gridSize: number) {
         this.gridSize = gridSize;
     }
-    calculateSizes(canvasSize: number): {
-        squareSize: number;
-        paddingT: number;
-        paddingB: number;
-        paddingL: number;
-        paddingR: number;
-    } {
-        const squareSize = Math.floor(canvasSize / (this.gridSize + 0.5));
-        const padding = canvasSize - this.gridSize * squareSize;
+    calculateSizes(canvas: HTMLCanvasElement): canvasSizes {
+        const width = canvas.width;
+        const height = canvas.height;
+        const squareSize = Math.floor(width / (this.gridSize + 0.5));
+        const padding = width - this.gridSize * squareSize;
 
         const paddingL = padding / 2;
         const paddingT = padding / 2;
-        const paddingR = canvasSize - this.gridSize * squareSize - paddingL;
-        const paddingB = canvasSize - this.gridSize * squareSize - paddingT;
+        const paddingR = width - this.gridSize * squareSize - paddingL;
+        const paddingB = width - this.gridSize * squareSize - paddingT;
 
-        return { squareSize, paddingT, paddingB, paddingL, paddingR };
+        return { width, height, squareSize, paddingT, paddingB, paddingL, paddingR };
     }
-    drawBoard(canvas: HTMLCanvasElement): void {
+    clearBoard(ctx: CanvasRenderingContext2D) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+    draw(canvas: HTMLCanvasElement): void {
         const ctx = canvas.getContext('2d');
-        const size = canvas.width;
         if (!ctx) return;
 
-        const sizes = this.calculateSizes(size);
+        const sizes = this.calculateSizes(canvas);
 
+        this.clearBoard(ctx);
+        this.drawGrid(ctx, sizes);
+        if (this.isBoardValid() && !this.isPaused() && this.isLoaded()) {
+            this.drawBoard(ctx, sizes);
+            this.drawOutline(ctx, sizes);
+        }
+    }
+    drawBoard(ctx: CanvasRenderingContext2D, sizes: canvasSizes): void {
         ctx.font = `${sizes.squareSize}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -60,17 +67,12 @@ export class SudokuBoard implements Board {
                         ctx.fillStyle = 'black';
                     }
                 }
-                ctx.fillText(cell.value.toString(), x, y + 6);
+
+                ctx.fillText(cell.value.toString(), x, y + 5);
             }
         }
     }
-    drawGrid(canvas: HTMLCanvasElement): void {
-        const ctx = canvas.getContext('2d');
-        const size = canvas.width;
-        if (!ctx) return;
-
-        const sizes = this.calculateSizes(size);
-
+    drawGrid(ctx: CanvasRenderingContext2D, sizes: canvasSizes): void {
         for (let i = 0; i < this.gridSize + 1; i++) {
             ctx.beginPath();
             ctx.strokeStyle = i % 3 === 0 ? 'black' : 'gray';
@@ -81,20 +83,17 @@ export class SudokuBoard implements Board {
 
             // Draw vertical lines
             ctx.moveTo(x, sizes.paddingT);
-            ctx.lineTo(x, size - sizes.paddingB);
+            ctx.lineTo(x, sizes.width - sizes.paddingB);
 
             // Draw horizontal lines
             ctx.moveTo(sizes.paddingL, y);
-            ctx.lineTo(size - sizes.paddingR, y);
+            ctx.lineTo(sizes.width - sizes.paddingR, y);
             ctx.stroke();
         }
     }
-    drawOutline(canvas: HTMLCanvasElement): void {
-        const ctx = canvas.getContext('2d');
-        const size = canvas.width;
-        if (!ctx || !this.cursor) return;
+    drawOutline(ctx: CanvasRenderingContext2D, sizes: canvasSizes): void {
+        if (!this.cursor) return;
 
-        const sizes = this.calculateSizes(size);
         const idx = this.cursor.getX();
         const idy = this.cursor.getY();
         const x = sizes.paddingL + idx * sizes.squareSize;
@@ -171,7 +170,13 @@ export class SudokuBoard implements Board {
         this.mistakes = 0;
         this.time = 0;
     }
-    getPaused(): boolean {
+    isLoaded(): boolean {
+        return this.loaded;
+    }
+    setLoaded(loaded: boolean): void {
+        this.loaded = loaded;
+    }
+    isPaused(): boolean {
         return this.paused;
     }
     setPaused(paused: boolean): void {
@@ -192,14 +197,12 @@ export class SudokuBoard implements Board {
     getScore(): number {
         return this.score;
     }
-    setCursor(input: { cursorX: number; cursorY: number; canvasSize: number }): void {
-        const sizes = this.calculateSizes(input.canvasSize);
-
+    setCursor(input: { cursorX: number; cursorY: number }, sizes: canvasSizes): void {
         if (
             input.cursorX < sizes.paddingL ||
-            input.cursorX > input.canvasSize - sizes.paddingR ||
+            input.cursorX > sizes.width - sizes.paddingR ||
             input.cursorY < sizes.paddingT ||
-            input.cursorY > input.canvasSize - sizes.paddingB
+            input.cursorY > sizes.width - sizes.paddingB
         ) {
             return;
         }
